@@ -1,10 +1,8 @@
-from rest_framework import serializers
-from rest_framework.relations import SlugRelatedField
+
 import base64
-
 from django.core.files.base import ContentFile
+from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-
 from posts.models import Comment, Post, Group, Follow, User
 
 
@@ -20,7 +18,7 @@ class Base64ImageField(serializers.ImageField):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    author = SlugRelatedField(slug_field='username', read_only=True)
+    author = serializers.SlugRelatedField(slug_field='username', read_only=True)
     image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
