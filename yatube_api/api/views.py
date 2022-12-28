@@ -1,9 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, filters, mixins
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from .permissions import AuthorOrReadOnly, ReadOnly
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from .permissions import AuthorOrReadOnly
 
 from posts.models import Post, Group, Follow
 
@@ -22,16 +21,11 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def get_permissions(self):
-        if self.action == 'retrieve':
-            return (ReadOnly(),)
-        return super().get_permissions()
-
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (AllowAny,)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -40,19 +34,12 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         post = get_object_or_404(Post, pk=self.kwargs.get("post_id"))
-        return post.comments.all()
+        return post.comments
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user,
                         post=get_object_or_404(Post,
-                                               pk=self.kwargs.get("post_id")))
-
-    def get_permissions(self):
-        if self.action == 'retrieve' or self.action == 'list':
-            return (ReadOnly(),)
-        elif self.action == 'create':
-            return (IsAuthenticated(),)
-        return super().get_permissions()
+                                               pk=self.kwargs["post_id"]))
 
 
 class FollowViewSet(mixins.CreateModelMixin,
@@ -60,7 +47,6 @@ class FollowViewSet(mixins.CreateModelMixin,
                     viewsets.GenericViewSet):
     serializer_class = FollowSerializer
     permission_classes = (IsAuthenticated,)
-    pagination_class = None
     filter_backends = (filters.SearchFilter,)
     search_fields = ("=following__username", '=user__username')
 

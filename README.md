@@ -53,3 +53,26 @@ python3 manage.py migrate
 ```
 python3 manage.py runserver
 ```
+
+
+Когда вы запустите проект, по нижеуказанному адресу будет 
+доступна полная документация для API Yatube в формате Redoc: 
+```
+/redoc/
+```
+
+Некоторые примеры запросов к API:
+
+Получить JWT-токен можно после отправки POST-запроса 
+на нижеуказанный эндпоинт, передав действующий логин 
+и пароль в полях username и password. 
+
+{
+"username": "string",
+"password": "string"
+}:
+
+```
+/api/v1/jwt/create/
+```
+
