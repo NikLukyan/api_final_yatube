@@ -21,6 +21,8 @@ INSTALLED_APPS = [
     'djoser',
     'api.apps.ApiConfig',
     'posts.apps.PostsConfig',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
 ]
 
 MIDDLEWARE = [
@@ -101,9 +103,18 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
 }
 
 SIMPLE_JWT = {'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
               'AUTH_HEADER_TYPES': ('Bearer',), }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Yatube API',
+    'DESCRIPTION': 'Yatube - social network for bloggers',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
